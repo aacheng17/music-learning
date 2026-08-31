@@ -1,0 +1,371 @@
+:root {
+  color-scheme: light;
+  --bg: #f4f4f2;
+  --panel: #ffffff;
+  --text: #1c1c1c;
+  --muted: #666;
+  --border: #ddd;
+  --accent: #2b6cb0;
+  --viewer-dot: #a7b6c7;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+header.bar {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--panel);
+}
+
+header.bar .crumbs {
+  font-size: 0.85rem;
+  color: var(--muted);
+  flex: 1;
+}
+
+main.listing {
+  max-width: 960px;
+  margin: 0;
+  padding: 0.75rem 1.25rem 3rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 0.9rem;
+  margin-top: 0.9rem;
+}
+
+.card {
+  display: block;
+  position: relative;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--panel);
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.card:hover {
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+  transform: translateY(-1px);
+}
+
+.card .label {
+  display: block;
+  color: var(--text);
+}
+
+.card .index {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.grid.tiles {
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+}
+
+.card.folder,
+.card-link {
+  display: block;
+  text-align: center;
+  padding: 0.75rem;
+  color: inherit;
+}
+
+.card.folder,
+.card.folder:hover,
+.card-link,
+.card-link:hover,
+.download,
+.download:hover {
+  text-decoration: none;
+}
+
+.card.folder .thumb,
+.card-link .thumb {
+  height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.card.folder .thumb img,
+.card-link .thumb img {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.card.folder .label,
+.card-link .label {
+  display: block;
+  margin-top: 0.7rem;
+  font-size: 1.05rem;
+}
+
+.download {
+  position: absolute;
+  top: 0.4rem;
+  right: 0.4rem;
+  width: 1.7rem;
+  height: 1.7rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--muted);
+}
+
+.download svg {
+  width: 15px;
+  height: 15px;
+}
+
+.download:hover {
+  background: #eee;
+  color: var(--text);
+}
+
+body.viewer-page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.pz-viewer {
+  position: relative;
+  flex: 1 1 0;
+  min-height: 0;
+}
+
+.pz-viewport {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background-image: radial-gradient(circle, var(--viewer-dot) 1.1px, transparent 1.1px);
+  background-size: 22px 22px;
+  background-color: var(--bg);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.pz-viewport.ready {
+  opacity: 1;
+}
+
+.pz-viewport.dragging {
+  cursor: grabbing;
+}
+
+.pz-stage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;
+  will-change: transform;
+}
+
+.pz-item {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;
+}
+
+.pz-item svg {
+  display: block;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.pz-highlight {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;
+  pointer-events: none;
+  outline: 2px solid var(--accent);
+  opacity: 0;
+  transition: opacity 0.1s ease;
+  z-index: 999;
+}
+
+.pz-highlight.active {
+  opacity: 1;
+}
+
+.pz-viewer .hint {
+  position: absolute;
+  bottom: 0.75rem;
+  left: 0.75rem;
+  font-size: 0.95rem;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.5rem 0.9rem;
+}
+
+.pz-viewer .controls {
+  position: absolute;
+  bottom: 0.75rem;
+  right: 0.75rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+button.reset {
+  font: inherit;
+  font-size: 0.9rem;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--panel);
+  color: var(--text);
+  cursor: pointer;
+}
+
+button.reset:hover {
+  background: #eee;
+}
+
+.sidebar-toggle {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 600;
+  font: inherit;
+  font-size: 0.85rem;
+  padding: 0.4rem 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--panel);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.sidebar-toggle:hover {
+  background: #eee;
+}
+
+.sidebar-toggle.delete-target {
+  background: #f8d7da;
+  border-color: #b3261e;
+  color: #b3261e;
+}
+
+.pz-sidebar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 260px;
+  background: rgba(255, 255, 255, 0.97);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  z-index: 500;
+  padding: 3.25rem 0.75rem 0.75rem;
+  transition: transform 0.2s ease;
+}
+
+.pz-sidebar.collapsed {
+  transform: translateX(-100%);
+}
+
+.pz-sidebar.delete-target {
+  background: rgba(248, 215, 218, 0.97);
+  box-shadow: inset 0 0 0 2px #b3261e;
+}
+
+.pz-sidebar-group {
+  margin-bottom: 1.1rem;
+}
+
+.pz-sidebar-group h3 {
+  font-size: 0.8rem;
+  font-weight: normal;
+  color: var(--muted);
+  margin: 0 0 0.4rem;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.3rem;
+}
+
+.pz-sidebar-item {
+  font-size: 0.85rem;
+  padding: 0.4rem 0.5rem;
+  border-radius: 4px;
+  cursor: grab;
+  user-select: none;
+}
+
+.pz-sidebar-item:hover {
+  background: var(--bg);
+}
+
+.pz-sidebar.suppress-hover .pz-sidebar-item:hover {
+  background: none;
+}
+
+.pz-sidebar-item.dragging {
+  opacity: 0.4;
+}
+
+.pz-floating {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 1000;
+  transform: translate(-9999px, -9999px);
+}
+
+.pz-floating.active {
+  transform: translate(var(--x), var(--y));
+}
+
+.pz-drag-ghost {
+  font-size: 0.85rem;
+  padding: 0.3rem 0.6rem;
+  background: var(--panel);
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  color: var(--text);
+}
+
+.pz-sidebar-tooltip {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 0.2rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+  opacity: 0;
+  transition: opacity 0.1s ease;
+}
+
+.pz-sidebar-tooltip.active {
+  opacity: 1;
+}
+
+.pz-sidebar-tooltip svg {
+  display: block;
+  width: 520px;
+  height: auto;
+}

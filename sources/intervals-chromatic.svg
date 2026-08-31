@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="63 -3 270 28" width="270" height="28">
+  <rect x="66" y="0" width="22" height="22" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+  <text x="77" y="11" fill="hsl(0, 45%, 45%)" font-family="Georgia, 'Times New Roman', Times, serif" font-size="8" text-anchor="middle" dominant-baseline="central">P1</text>
+  <rect x="88" y="0" width="22" height="22" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+  <text x="99" y="11" fill="hsl(30, 45%, 45%)" font-family="Georgia, 'Times New Roman', Times, serif" font-size="8" text-anchor="middle" dominant-baseline="central">m2</text>
+  <rect x="110" y="0" width="22" height="22" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+  <text x="121" y="11" fill="hsl(60, 45%, 45%)" font-family="Georgia, 'Times New Roman', Times, serif" font-size="8" text-anchor="middle" dominant-baseline="central">M2</text>
+  <rect x="132" y="0" width="22" height="22" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+  <text x="143" y="11" fill="hsl(90, 45%, 45%)" font-family="Georgia, 'Times New Roman', Times, serif" font-size="8" text-anchor="middle" dominant-baseline="central">m3</text>
+  <rect x="154" y="0" width="22" height="22" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+  <text x="165" y="11" fill="hsl(120, 45%, 45%)" font-family="Georgia, 'Times New Roman', Times, serif" font-size="8" text-anchor="middle" dominant-baseline="central">M3</text>
+  <rect x="176" y="0" width="22" height="22" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+  <text x="187" y="11" fill="hsl(150, 45%, 45%)" font-family="Georgia, 'Times New Roman', Times, serif" font-size="8" text-anchor="middle" dominant-baseline="central">P4</text>
+  <rect x="198" y="0" width="22" height="22" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+  <text x="209" y="11" fill="hsl(180, 45%, 45%)" font-family="Georgia, 'Times New Roman', Times, serif" font-size="8" text-anchor="middle" dominant-baseline="central">d5</text>
+  <rect x="220" y="0" width="22" height="22" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+  <text x="231" y="11" fill="hsl(210, 45%, 45%)" font-family="Georgia, 'Times New Roman', Times, serif" font-size="8" text-anchor="middle" dominant-baseline="central">P5</text>
+  <rect x="242" y="0" width="22" height="22" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+  <text x="253" y="11" fill="hsl(240, 45%, 45%)" font-family="Georgia, 'Times New Roman', Times, serif" font-size="8" text-anchor="middle" dominant-baseline="central">m6</text>
+  <rect x="264" y="0" width="22" height="22" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+  <text x="275" y="11" fill="hsl(270, 45%, 45%)" font-family="Georgia, 'Times New Roman', Times, serif" font-size="8" text-anchor="middle" dominant-baseline="central">M6</text>
+  <rect x="286" y="0" width="22" height="22" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+  <text x="297" y="11" fill="hsl(300, 45%, 45%)" font-family="Georgia, 'Times New Roman', Times, serif" font-size="8" text-anchor="middle" dominant-baseline="central">m7</text>
+  <rect x="308" y="0" width="22" height="22" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+  <text x="319" y="11" fill="hsl(330, 45%, 45%)" font-family="Georgia, 'Times New Roman', Times, serif" font-size="8" text-anchor="middle" dominant-baseline="central">M7</text>
+</svg>

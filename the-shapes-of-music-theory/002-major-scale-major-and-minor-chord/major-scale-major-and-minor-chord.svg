@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="63 -3 270 182" width="270" height="182">
+  <text x="66" y="16" fill="#000000" font-family="Georgia, 'Times New Roman', Times, serif" font-size="16" text-anchor="start">Major Scale</text>
+  <rect x="66" y="22" width="22" height="22" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+  <circle cx="77" cy="33" r="4" fill="#000000"/>
+  <rect x="88" y="22" width="22" height="22" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+  <rect x="110" y="22" width="22" height="22" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+  <circle cx="121" cy="33" r="2.5" fill="#000000"/>
+  <rect x="132" y="22" width="22" height="22" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+  <rect x="154" y="22" width="22" height="22" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+  <circle cx="165" cy="33" r="2.5" fill="#000000"/>
+  <rect x="176" y="22" width="22" height="22" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+  <circle cx="187" cy="33" r="2.5" fill="#000000"/>
+  <rect x="198" y="22" width="22" height="22" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+  <rect x="220" y="22" width="22" height="22" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+  <circle cx="231" cy="33" r="2.5" fill="#000000"/>
+  <rect x="242" y="22" width="22" height="22" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+  <rect x="264" y="22" width="22" height="22" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+  <circle cx="275" cy="33" r="2.5" fill="#000000"/>
+  <rect x="286" y="22" width="22" height="22" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+  <rect x="308" y="22" width="22" height="22" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+  <circle cx="319" cy="33" r="2.5" fill="#000000"/>
+  <text x="66" y="82" fill="#000000" font-family="Georgia, 'Times New Roman', Times, serif" font-size="16" text-anchor="start">Major Chord</text>
+  <rect x="66" y="88" width="22" height="22" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+  <circle cx="77" cy="99" r="4" fill="#000000"/>
+  <rect x="88" y="88" width="22" height="22" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+  <rect x="110" y="88" width="22" height="22" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+  <rect x="132" y="88" width="22" height="22" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+  <rect x="154" y="88" width="22" height="22" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+  <circle cx="165" cy="99" r="2.5" fill="#000000"/>
+  <rect x="176" y="88" width="22" height="22" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+  <rect x="198" y="88" width="22" height="22" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+  <rect x="220" y="88" width="22" height="22" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+  <circle cx="231" cy="99" r="2.5" fill="#000000"/>
+  <rect x="242" y="88" width="22" height="22" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+  <rect x="264" y="88" width="22" height="22" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+  <rect x="286" y="88" width="22" height="22" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+  <rect x="308" y="88" width="22" height="22" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+  <text x="66" y="148" fill="#000000" font-family="Georgia, 'Times New Roman', Times, serif" font-size="16" text-anchor="start">Minor Chord</text>
+  <rect x="66" y="154" width="22" height="22" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+  <circle cx="77" cy="165" r="4" fill="#000000"/>
+  <rect x="88" y="154" width="22" height="22" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+  <rect x="110" y="154" width="22" height="22" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+  <rect x="132" y="154" width="22" height="22" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+  <circle cx="143" cy="165" r="2.5" fill="#000000"/>
+  <rect x="154" y="154" width="22" height="22" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+  <rect x="176" y="154" width="22" height="22" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+  <rect x="198" y="154" width="22" height="22" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+  <rect x="220" y="154" width="22" height="22" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+  <circle cx="231" cy="165" r="2.5" fill="#000000"/>
+  <rect x="242" y="154" width="22" height="22" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+  <rect x="264" y="154" width="22" height="22" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+  <rect x="286" y="154" width="22" height="22" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+  <rect x="308" y="154" width="22" height="22" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+</svg>
