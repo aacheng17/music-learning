@@ -5,7 +5,6 @@ const { makeZip } = require('./zip');
 const SITE_ROOT = path.join(__dirname, '..');
 const SOURCES_DIR = path.join(SITE_ROOT, 'sources');
 
-const MAJOR_SCALE_SVG = path.join(SOURCES_DIR, 'major-scale.svg');
 const MAJOR_SCALE_ONE_OCTAVE_SVG = path.join(SOURCES_DIR, 'major-scale-one-octave.svg');
 const KEYBOARD_SVG = path.join(SOURCES_DIR, 'keyboard.svg');
 const FREQUENCIES_SVG = path.join(SOURCES_DIR, 'frequencies.svg');
@@ -22,21 +21,87 @@ function svgTitle(svgMarkup) {
   return m ? m[1] : '';
 }
 
-function loadSidebarGroup(dirName, groupTitle) {
-  const dir = path.join(MODES_AND_CHORDS_ITEMS_DIR, dirName);
-  const files = fs.readdirSync(dir).filter((f) => f.endsWith('.svg')).sort();
-  const items = files.map((f) => {
-    const markup = fs.readFileSync(path.join(dir, f), 'utf8').trim();
-    return { title: svgTitle(markup), markup };
-  });
-  return { title: groupTitle, items };
+const KINDS = ['relative', 'absolute', 'chart'];
+function assertKind(kind, label) {
+  if (!KINDS.includes(kind)) throw new Error(`Missing/invalid kind "${kind}" for "${label}" (must be one of ${KINDS.join(', ')})`);
 }
 
-const MODES_AND_CHORDS_SIDEBAR = [
-  loadSidebarGroup('modes', 'Modes'),
-  loadSidebarGroup('modes-from-i', 'Modes (from I)'),
-  loadSidebarGroup('chords', 'Chords'),
+const MODES_DIR = path.join(MODES_AND_CHORDS_ITEMS_DIR, 'modes');
+const MODES_FROM_I_DIR = path.join(MODES_AND_CHORDS_ITEMS_DIR, 'modes-from-i');
+const CHORDS_DIR = path.join(MODES_AND_CHORDS_ITEMS_DIR, 'chords');
+
+function loadItemPath(fullPath, kind, titleOverride) {
+  assertKind(kind, titleOverride || fullPath);
+  const markup = fs.readFileSync(fullPath, 'utf8').trim();
+  return { title: titleOverride || svgTitle(markup), markup, kind };
+}
+
+function loadItemFile(dir, filename, kind, titleOverride) {
+  return loadItemPath(path.join(dir, filename), kind, titleOverride);
+}
+
+const LIBRARY_ITEMS = [
+  { title: 'Solfege', srcPath: SOLFEGE_CHROMATIC_SVG, x: 792, kind: 'relative' },
+  { title: 'Intervals', srcPath: INTERVALS_CHROMATIC_SVG, x: 792, kind: 'relative' },
+  { title: 'Whole/Half Steps', srcPath: WHOLE_HALF_STEPS_SVG, x: 792, kind: 'relative' },
+  { title: 'Major Scale', srcPath: path.join(MODES_DIR, '01-ionian-major-scale.svg'), kind: 'relative', x: 66, repeatRight: 6 },
+  { title: 'Note Names', srcPath: SHARPS_SVG, gapBefore: true, kind: 'absolute' },
+  { title: 'Frequencies', srcPath: FREQUENCIES_SVG, kind: 'absolute' },
+  { title: 'Keyboard', srcPath: KEYBOARD_SVG, kind: 'absolute' },
 ];
+
+const STARTER_ORDER = ['Frequencies', 'Note Names', 'Keyboard', 'Intervals', 'Solfege', 'Whole/Half Steps'];
+const STARTER_GROUP = {
+  title: 'Starter',
+  items: STARTER_ORDER.map((title) => {
+    const it = LIBRARY_ITEMS.find((li) => li.title === title);
+    if (!it) throw new Error(`Starter group: no library item titled "${title}"`);
+    return loadItemPath(it.srcPath, it.kind, it.title);
+  }),
+};
+
+function loadGroupItems(dir, kind, titleTransform) {
+  assertKind(kind, dir);
+  const files = fs.readdirSync(dir).filter((f) => f.endsWith('.svg')).sort();
+  return files.map((f) => {
+    const markup = fs.readFileSync(path.join(dir, f), 'utf8').trim();
+    const rawTitle = svgTitle(markup);
+    return { title: titleTransform ? titleTransform(rawTitle) : rawTitle, markup, kind };
+  });
+}
+
+const COMMON_GROUP = {
+  title: 'Common',
+  items: [
+    loadItemFile(MODES_DIR, '01-ionian-major-scale.svg', 'relative', 'Major Scale'),
+    loadItemFile(CHORDS_DIR, '02-major-triad.svg', 'relative', 'Major Triad'),
+    loadItemFile(CHORDS_DIR, '03-minor-triad.svg', 'relative', 'Minor Triad'),
+  ],
+};
+
+const CHORDS_BY_NOTE_COUNT = [
+  { title: '2 Notes', files: ['01-power-chord.svg'] },
+  { title: '3 Notes', files: ['02-major-triad.svg', '03-minor-triad.svg', '04-diminished-triad.svg', '05-augmented-triad.svg', '06-sus2-chord.svg', '07-sus4-chord.svg'] },
+  { title: '4 Notes', files: ['08-6-chord.svg', '09-minor-6-chord.svg', '10-add9-chord.svg', '11-major-7-chord.svg', '12-7-chord.svg', '13-7sus4-chord.svg', '14-augmented-7-chord.svg', '15-minor-7-chord.svg', '16-minor-major-7-chord.svg', '17-half-diminished-7-chord.svg', '18-diminished-7-chord.svg'] },
+  { title: '5 Notes', files: ['19-6-9-chord.svg', '20-major-9-chord.svg', '21-9-chord.svg', '22-minor-9-chord.svg'] },
+];
+
+const CHORDS_GROUP = {
+  title: 'Chords',
+  subgroups: CHORDS_BY_NOTE_COUNT.map((sg) => ({
+    title: sg.title,
+    items: sg.files.map((f) => loadItemFile(CHORDS_DIR, f, 'relative')),
+  })),
+};
+
+const MODES_GROUP = { title: 'Modes', items: loadGroupItems(MODES_DIR, 'relative') };
+
+const MODES_FROM_I_GROUP = {
+  title: 'Modes (from I)',
+  items: loadGroupItems(MODES_FROM_I_DIR, 'relative', (t) => t.replace(/ \((?:Major|Minor) Scale\)/, '')),
+};
+
+const MODES_AND_CHORDS_SIDEBAR = [STARTER_GROUP, COMMON_GROUP, CHORDS_GROUP, MODES_GROUP, MODES_FROM_I_GROUP];
 
 const MANIFEST = [
   {
@@ -48,18 +113,10 @@ const MANIFEST = [
         slug: 'the-library-of-musical-notes',
         title: 'The Library of Musical Notes',
         sidebarGroups: MODES_AND_CHORDS_SIDEBAR,
-        items: [
-          { title: 'Solfege (Chromatic)', srcPath: SOLFEGE_CHROMATIC_SVG, x: 792 },
-          { title: 'Intervals (Chromatic)', srcPath: INTERVALS_CHROMATIC_SVG, x: 792 },
-          { title: 'Whole/Half Steps', srcPath: WHOLE_HALF_STEPS_SVG, x: 792 },
-          { title: 'Major Scale', srcPath: MAJOR_SCALE_SVG },
-          { title: 'Sharps', srcPath: SHARPS_SVG, gapBefore: true },
-          { title: 'Frequencies', srcPath: FREQUENCIES_SVG },
-          { title: 'Keyboard', srcPath: KEYBOARD_SVG },
-        ],
+        items: LIBRARY_ITEMS,
       },
-      { slug: 'major-scale-major-and-minor-chord', title: 'Major Scale, Major and Minor Chord', srcPath: MAJOR_SCALE_MAJOR_MINOR_CHORD_SVG },
-      { slug: 'modes-and-chords', title: 'Modes and Chords', srcPath: MODES_AND_CHORDS_SVG },
+      { slug: 'major-scale-major-and-minor-chord', title: 'Major Scale, Major and Minor Chord', srcPath: MAJOR_SCALE_MAJOR_MINOR_CHORD_SVG, kind: 'chart' },
+      { slug: 'modes-and-chords', title: 'Modes and Chords', srcPath: MODES_AND_CHORDS_SVG, kind: 'chart' },
     ],
   },
 ];
@@ -87,7 +144,7 @@ const categories = MANIFEST.map((cat) => {
       slug: e.slug,
       dirName: `${num}-${e.slug}`,
       title: e.title,
-      items: e.items || [{ title: e.title, srcPath: e.srcPath }],
+      items: e.items || [{ title: e.title, srcPath: e.srcPath, kind: e.kind }],
       sidebarGroups: e.sidebarGroups,
     };
   });
@@ -182,10 +239,14 @@ ${cards}
 }
 
 function renderItem(it) {
+  assertKind(it.kind, it.title);
   const svgMarkup = fs.readFileSync(it.srcPath, 'utf8').trim();
   const dataAttrs = [
     it.x != null ? ` data-x="${it.x}"` : '',
     it.gapBefore ? ' data-gap-before="true"' : '',
+    ` data-kind="${it.kind}"`,
+    it.repeatLeft ? ` data-repeat-left="${it.repeatLeft}"` : '',
+    it.repeatRight ? ` data-repeat-right="${it.repeatRight}"` : '',
   ].join('');
   return `      <div class="pz-item"${dataAttrs}>
 ${svgMarkup}
@@ -193,23 +254,41 @@ ${svgMarkup}
 }
 
 function renderSidebarItem(it) {
-  return `          <div class="pz-sidebar-item" tabindex="0">
+  assertKind(it.kind, it.title);
+  return `          <div class="pz-sidebar-item" tabindex="0" data-kind="${it.kind}">
             <span>${it.title}</span>
             <template>${it.markup}</template>
           </div>`;
 }
 
-function renderSidebar(groups) {
-  const body = groups
-    .map(
-      (g) => `        <div class="pz-sidebar-group">
-          <h3>${g.title}</h3>
-${g.items.map(renderSidebarItem).join('\n')}
-        </div>`
-    )
-    .join('\n');
+function renderSidebarSubgroup(sg) {
+  return `          <div class="pz-sidebar-subgroup">
+            <h4>${sg.title}</h4>
+${sg.items.map(renderSidebarItem).join('\n')}
+          </div>`;
+}
 
-  return `    <button class="sidebar-toggle" type="button" aria-expanded="false">Modes and Chords</button>
+function renderSidebarGroup(g) {
+  const inner = g.subgroups
+    ? g.subgroups.map(renderSidebarSubgroup).join('\n')
+    : g.items.map(renderSidebarItem).join('\n');
+  return `        <div class="pz-sidebar-group">
+          <h3>
+            <button class="pz-sidebar-group-toggle" type="button" aria-expanded="true">
+              <span>${g.title}</span>
+              <span class="pz-sidebar-group-caret" aria-hidden="true">&#9662;</span>
+            </button>
+          </h3>
+          <div class="pz-sidebar-group-body">
+${inner}
+          </div>
+        </div>`;
+}
+
+function renderSidebar(groups) {
+  const body = groups.map(renderSidebarGroup).join('\n');
+
+  return `    <button class="sidebar-toggle" type="button" aria-expanded="false" aria-label="Modes and Chords">+</button>
     <aside class="pz-sidebar collapsed">
       <div class="pz-sidebar-body">
 ${body}
@@ -237,6 +316,7 @@ ${items}
       </div>
     </div>
 ${hasSidebar ? renderSidebar(entry.sidebarGroups) : ''}
+${hasSidebar ? '    <div class="pz-collapsed-drop-zone"></div>' : ''}
 ${hasSidebar ? '    <div class="pz-drag-ghost pz-floating"></div>' : ''}
 ${hasSidebar ? '    <div class="pz-sidebar-tooltip pz-floating"></div>' : ''}
     <div class="hint">
@@ -245,6 +325,7 @@ ${hasSidebar ? '    <div class="pz-sidebar-tooltip pz-floating"></div>' : ''}
     <div class="controls">
       <button class="reset reset-zoom-pan" type="button">Reset zoom/pan</button>
       <button class="reset reset-images" type="button">Reset images</button>
+      <button class="reset clear-images" type="button">Clear images</button>
     </div>
   </div>`;
 
