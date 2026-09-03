@@ -1,6 +1,12 @@
 const fs = require('fs');
 const path = require('path');
-const { makeZip } = require('./zip');
+
+const SHOW_STATIC_IMAGES = false;
+
+const BUILD_ID = Date.now().toString(36);
+function v(url) {
+  return `${url}?v=${BUILD_ID}`;
+}
 
 const SITE_ROOT = path.join(__dirname, '..');
 const SOURCES_DIR = path.join(SITE_ROOT, 'sources');
@@ -8,11 +14,11 @@ const SOURCES_DIR = path.join(SITE_ROOT, 'sources');
 const MAJOR_SCALE_ONE_OCTAVE_SVG = path.join(SOURCES_DIR, 'major-scale-one-octave.svg');
 const KEYBOARD_SVG = path.join(SOURCES_DIR, 'keyboard.svg');
 const FREQUENCIES_SVG = path.join(SOURCES_DIR, 'frequencies.svg');
-const SHARPS_SVG = path.join(SOURCES_DIR, 'sharps.svg');
+const NOTE_NAMES_SVG = path.join(SOURCES_DIR, 'note-names.svg');
 const INTERVALS_CHROMATIC_SVG = path.join(SOURCES_DIR, 'intervals-chromatic.svg');
 const SOLFEGE_CHROMATIC_SVG = path.join(SOURCES_DIR, 'solfege-chromatic.svg');
 const WHOLE_HALF_STEPS_SVG = path.join(SOURCES_DIR, 'whole-half-steps.svg');
-const MAJOR_SCALE_MAJOR_MINOR_CHORD_SVG = path.join(SOURCES_DIR, 'major-scale-major-and-minor-chord.svg');
+const MAJOR_MINOR_TRIAD_SVG = path.join(SOURCES_DIR, 'major-and-minor-triad.svg');
 const MODES_AND_CHORDS_SVG = path.join(SOURCES_DIR, 'modes-and-chords.svg');
 const MODES_AND_CHORDS_ITEMS_DIR = path.join(SOURCES_DIR, 'modes-and-chords-items');
 
@@ -40,12 +46,12 @@ function loadItemFile(dir, filename, kind, titleOverride) {
   return loadItemPath(path.join(dir, filename), kind, titleOverride);
 }
 
-const LIBRARY_ITEMS = [
+const PLAYGROUND_ITEMS = [
   { title: 'Solfege', srcPath: SOLFEGE_CHROMATIC_SVG, x: 792, kind: 'relative' },
   { title: 'Intervals', srcPath: INTERVALS_CHROMATIC_SVG, x: 792, kind: 'relative' },
   { title: 'Whole/Half Steps', srcPath: WHOLE_HALF_STEPS_SVG, x: 792, kind: 'relative' },
   { title: 'Major Scale', srcPath: path.join(MODES_DIR, '01-ionian-major-scale.svg'), kind: 'relative', x: 66, repeatRight: 6 },
-  { title: 'Note Names', srcPath: SHARPS_SVG, gapBefore: true, kind: 'absolute' },
+  { title: 'Note Names', srcPath: NOTE_NAMES_SVG, gapBefore: true, kind: 'absolute' },
   { title: 'Frequencies', srcPath: FREQUENCIES_SVG, kind: 'absolute' },
   { title: 'Keyboard', srcPath: KEYBOARD_SVG, kind: 'absolute' },
 ];
@@ -54,8 +60,8 @@ const STARTER_ORDER = ['Frequencies', 'Note Names', 'Keyboard', 'Intervals', 'So
 const STARTER_GROUP = {
   title: 'Starter',
   items: STARTER_ORDER.map((title) => {
-    const it = LIBRARY_ITEMS.find((li) => li.title === title);
-    if (!it) throw new Error(`Starter group: no library item titled "${title}"`);
+    const it = PLAYGROUND_ITEMS.find((li) => li.title === title);
+    if (!it) throw new Error(`Starter group: no playground item titled "${title}"`);
     return loadItemPath(it.srcPath, it.kind, it.title);
   }),
 };
@@ -101,7 +107,7 @@ const MODES_FROM_I_GROUP = {
   items: loadGroupItems(MODES_FROM_I_DIR, 'relative', (t) => t.replace(/ \((?:Major|Minor) Scale\)/, '')),
 };
 
-const MODES_AND_CHORDS_SIDEBAR = [STARTER_GROUP, COMMON_GROUP, CHORDS_GROUP, MODES_GROUP, MODES_FROM_I_GROUP];
+const SIDEBAR_GROUPS = [STARTER_GROUP, COMMON_GROUP, CHORDS_GROUP, MODES_GROUP, MODES_FROM_I_GROUP];
 
 const MANIFEST = [
   {
@@ -111,11 +117,11 @@ const MANIFEST = [
     entries: [
       {
         slug: 'the-library-of-musical-notes',
-        title: 'The Library of Musical Notes',
-        sidebarGroups: MODES_AND_CHORDS_SIDEBAR,
-        items: LIBRARY_ITEMS,
+        title: 'The Shapes of Music Theory',
+        sidebarGroups: SIDEBAR_GROUPS,
+        items: PLAYGROUND_ITEMS,
       },
-      { slug: 'major-scale-major-and-minor-chord', title: 'Major Scale, Major and Minor Chord', srcPath: MAJOR_SCALE_MAJOR_MINOR_CHORD_SVG, kind: 'chart' },
+      { slug: 'major-and-minor-triad', title: 'Major and Minor Triad', srcPath: MAJOR_MINOR_TRIAD_SVG, kind: 'chart' },
       { slug: 'modes-and-chords', title: 'Modes and Chords', srcPath: MODES_AND_CHORDS_SVG, kind: 'chart' },
     ],
   },
@@ -182,11 +188,10 @@ function renderRootIndex(categories) {
       const thumbSrc = cat.preview
         ? `${cat.name}/preview.svg`
         : previewEntry && `${cat.name}/${previewEntry.dirName}/${previewEntry.slug}.svg`;
-      const thumb = thumbSrc ? `<div class="thumb"><img src="${thumbSrc}" alt=""></div>` : '';
+      const thumb = thumbSrc ? `<div class="thumb"><img src="${v(thumbSrc)}" alt=""></div>` : '';
       return `      <a class="card folder" href="${cat.name}/index.html">
         ${thumb}
         <span class="label">${cat.title}</span>
-        <span class="index">${cat.entries.length} diagram${cat.entries.length === 1 ? '' : 's'}</span>
       </a>`;
     })
     .join('\n');
@@ -202,39 +207,108 @@ ${cards}
 
   return pageShell({
     title: 'Home',
-    extraHead: `<link rel="stylesheet" href="assets/style.css">`,
+    extraHead: `<link rel="stylesheet" href="${v('assets/style.css')}">`,
     body,
   });
 }
 
-function renderCategoryIndex(cat) {
-  const cards = cat.entries
-    .map(
-      (e) => `      <div class="card file">
-        <a class="card-link" href="${e.dirName}/index.html">
-          <div class="thumb"><img src="${e.dirName}/${e.slug}.svg" alt=""></div>
-          <span class="label">${e.title}</span>
-        </a>
-        <a class="download" href="${e.dirName}/${e.slug}.zip" download="${e.slug}.zip" title="Download SVGs (.zip)" aria-label="Download SVGs (.zip)">
+function flattenSidebarImages(groups) {
+  const images = [];
+  const collect = (items) => items.forEach((it) => images.push({ title: it.title, svg: it.markup }));
+  groups.forEach((g) => {
+    if (g.subgroups) g.subgroups.forEach((sg) => collect(sg.items));
+    else collect(g.items);
+  });
+  return images;
+}
+
+function embedJson(id, data) {
+  const json = JSON.stringify(data).replace(/<\/script/gi, '<\\/script');
+  return `    <script type="application/json" id="${id}">${json}</script>`;
+}
+
+function renderDownloadButton(dataId, label) {
+  return `        <button class="download" type="button" data-images="${dataId}" data-label="${label}" title="Download images" aria-label="Download ${label}">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 19h14"/></svg>
-        </a>
-      </div>`
-    )
+        </button>`;
+}
+
+function renderCategoryIndex(cat) {
+  const playgroundEntries = cat.entries.filter((e) => e.sidebarGroups);
+  const staticEntries = cat.entries.filter((e) => !e.sidebarGroups);
+  const dataScripts = [];
+
+  const playgroundPanel = playgroundEntries
+    .map((e) => {
+      const dataId = `dl-${e.slug}`;
+      dataScripts.push(embedJson(dataId, flattenSidebarImages(e.sidebarGroups)));
+      return `    <section class="playground-panel">
+${renderDownloadButton(dataId, e.title)}
+      <div class="playground-panel-center">
+        <a class="btn-primary" href="${e.dirName}/index.html">Start</a>
+      </div>
+    </section>`;
+    })
     .join('\n');
+
+  const staticTiles = SHOW_STATIC_IMAGES
+    ? staticEntries
+        .map((e) => {
+          const dataId = `dl-${e.slug}`;
+          const markup = fs.readFileSync(e.items[0].srcPath, 'utf8').trim();
+          dataScripts.push(embedJson(dataId, [{ title: e.title, svg: markup }]));
+          return `          <div class="static-tile">
+            <a class="static-tile-link" href="${e.dirName}/index.html">
+              <div class="static-tile-thumb"><img src="${v(`${e.dirName}/${e.slug}.svg`)}" alt=""></div>
+              <span class="static-tile-label">${e.title}</span>
+            </a>
+${renderDownloadButton(dataId, e.title)}
+          </div>`;
+        })
+        .join('\n')
+    : '';
+
+  const staticSection = SHOW_STATIC_IMAGES
+    ? `    <details class="static-dropdown">
+      <summary>Static images</summary>
+      <div class="static-dropdown-body">
+        <div class="static-grid">
+${staticTiles}
+        </div>
+      </div>
+    </details>`
+    : '';
 
   const body = `  <header class="bar">
     <span class="crumbs"><a href="../index.html">Home</a> / ${cat.title}</span>
   </header>
-  <main class="listing">
-    <div class="grid tiles">
-${cards}
+  <main class="listing playground-page">
+${playgroundPanel}
+${staticSection}
+  </main>
+  <div class="dl-modal-overlay" id="dl-modal" hidden>
+    <div class="dl-modal" role="dialog" aria-modal="true" aria-labelledby="dl-modal-title">
+      <h2 id="dl-modal-title"></h2>
+      <p class="dl-modal-kind"></p>
+      <div class="dl-modal-format">
+        <label><input type="radio" name="dl-format" value="svg" checked> SVG</label>
+        <label><input type="radio" name="dl-format" value="png"> PNG</label>
+      </div>
+      <ul class="dl-modal-list"></ul>
+      <div class="dl-modal-actions">
+        <button type="button" class="dl-modal-cancel">Cancel</button>
+        <button type="button" class="dl-modal-confirm">Download</button>
+      </div>
     </div>
-  </main>`;
+  </div>
+${dataScripts.join('\n')}`;
 
   return pageShell({
     title: `${cat.title} — Home`,
-    extraHead: `<link rel="stylesheet" href="../assets/style.css">`,
+    bodyClass: 'category-page',
+    extraHead: `<link rel="stylesheet" href="${v('../assets/style.css')}">`,
     body,
+    scripts: `  <script src="${v('../assets/gallery.js')}"></script>`,
   });
 }
 
@@ -301,7 +375,7 @@ function renderLeaf(cat, entry) {
   const hasSidebar = !!entry.sidebarGroups;
   const dragHint = [
     entry.items.length > 1 ? 'drag an image to move it' : null,
-    hasSidebar ? 'drag a structure from the sidebar to add it' : null,
+    hasSidebar ? 'drag an image from the sidebar to add it' : null,
     'middle-drag or arrow keys to pan',
   ].filter(Boolean).join(' &middot; ');
 
@@ -332,9 +406,9 @@ ${hasSidebar ? '    <div class="pz-sidebar-tooltip pz-floating"></div>' : ''}
   return pageShell({
     title: `${entry.title} — Home`,
     bodyClass: 'viewer-page',
-    extraHead: `<link rel="stylesheet" href="../../assets/style.css">`,
+    extraHead: `<link rel="stylesheet" href="${v('../../assets/style.css')}">`,
     body,
-    scripts: `  <script src="../../assets/pan-zoom.js"></script>`,
+    scripts: `  <script src="${v('../../assets/pan-zoom.js')}"></script>`,
   });
 }
 
@@ -351,9 +425,6 @@ for (const cat of categories) {
     ensureDir(leafDir);
     fs.copyFileSync(entry.items[0].srcPath, path.join(leafDir, `${entry.slug}.svg`));
     fs.writeFileSync(path.join(leafDir, 'index.html'), renderLeaf(cat, entry));
-
-    const zipFiles = entry.items.map((it) => ({ name: path.basename(it.srcPath), data: fs.readFileSync(it.srcPath) }));
-    fs.writeFileSync(path.join(leafDir, `${entry.slug}.zip`), makeZip(zipFiles));
   }
 }
 

@@ -279,10 +279,12 @@
     }
 
     var originalTemplates = [];
-    for (var i = 0; i < itemEls.length; i++) originalTemplates.push(itemEls[i].cloneNode(true));
+    for (var i = 0; i < itemEls.length; i++) {
+      originalTemplates.push(itemEls[i].cloneNode(true));
+      itemEls[i].parentNode.removeChild(itemEls[i]);
+    }
 
     var entries = [];
-    for (var i = 0; i < itemEls.length; i++) entries.push(makeEntry(itemEls[i], true));
 
     function compareStacking(a, b) {
       var ka = KIND_RANK[a.kind] || 0, kb = KIND_RANK[b.kind] || 0;
@@ -295,7 +297,6 @@
       var sorted = entries.slice().sort(compareStacking);
       for (var i = 0; i < sorted.length; i++) sorted[i].el.style.zIndex = i + 1;
     }
-    restackZIndex();
 
     function layout() {
       var y = 0;
@@ -306,7 +307,6 @@
         y += entries[i].h + 2 * entries[i].padY;
       }
     }
-    layout();
 
     var minX, maxX, minY, maxY, contentW, contentH;
     function recomputeContentBounds() {
@@ -325,7 +325,6 @@
       contentW = maxX - minX;
       contentH = maxY - minY;
     }
-    recomputeContentBounds();
 
     var scale = 1, panX = 0, panY = 0;
     var MIN_SCALE = 0.05, MAX_SCALE = 30;
