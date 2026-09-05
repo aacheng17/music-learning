@@ -116,8 +116,9 @@ const MANIFEST = [
     preview: MAJOR_SCALE_ONE_OCTAVE_SVG,
     entries: [
       {
-        slug: 'the-library-of-musical-notes',
-        title: 'The Shapes of Music Theory',
+        slug: 'play',
+        dirName: 'play',
+        title: 'Play',
         sidebarGroups: SIDEBAR_GROUPS,
         items: PLAYGROUND_ITEMS,
       },
@@ -148,7 +149,7 @@ const categories = MANIFEST.map((cat) => {
     return {
       num,
       slug: e.slug,
-      dirName: `${num}-${e.slug}`,
+      dirName: e.dirName || `${num}-${e.slug}`,
       title: e.title,
       items: e.items || [{ title: e.title, srcPath: e.srcPath, kind: e.kind }],
       sidebarGroups: e.sidebarGroups,
@@ -184,7 +185,7 @@ ${scripts || ''}
 function renderRootIndex(categories) {
   const cards = categories
     .map((cat) => {
-      const previewEntry = cat.entries.find((e) => e.slug === 'the-library-of-musical-notes') || cat.entries[0];
+      const previewEntry = cat.entries.find((e) => e.slug === 'play') || cat.entries[0];
       const thumbSrc = cat.preview
         ? `${cat.name}/preview.svg`
         : previewEntry && `${cat.name}/${previewEntry.dirName}/${previewEntry.slug}.svg`;
