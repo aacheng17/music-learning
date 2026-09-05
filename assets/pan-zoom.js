@@ -445,8 +445,19 @@
     var pressEntry = null, pressX = 0, pressY = 0;
     var repeatEdge = null, repeatStartClientX = 0, repeatStartTileFrom = 0, repeatStartTileTo = 0;
     var dragStartDragX = 0, dragStartDragY = 0;
+    var deleteZoneArmed = false;
+
+    function armDeleteZone() {
+      deleteZoneArmed = true;
+      setDeleteTarget(true);
+      if (sidebarToggle) {
+        sidebarToggle.innerHTML = TRASH_ICON;
+        sidebarToggle.setAttribute('aria-label', 'Delete');
+      }
+    }
 
     function endDragUI() {
+      deleteZoneArmed = false;
       setDeleteTarget(false);
       setDeleteHover(false);
       if (sidebarToggle) {
@@ -500,12 +511,6 @@
           repeatStartClientX = e.clientX;
           repeatStartTileFrom = dragEntry.tileFrom;
           repeatStartTileTo = dragEntry.tileTo;
-        } else {
-          setDeleteTarget(true);
-          if (sidebarToggle) {
-            sidebarToggle.innerHTML = TRASH_ICON;
-            sidebarToggle.setAttribute('aria-label', 'Delete');
-          }
         }
         if (sidebar) sidebar.classList.add('suppress-hover');
         hideSidebarTooltip();
@@ -541,7 +546,8 @@
         dragEntry.dragY += dy / scale;
         applyItem(dragEntry);
         if (hoveredEntry === dragEntry) syncHighlight();
-        setDeleteHover(isOverDeleteZone(e.clientX, e.clientY));
+        if (!deleteZoneArmed && Math.hypot(e.clientX - pressX, e.clientY - pressY) > CLICK_MAX_MOVE) armDeleteZone();
+        if (deleteZoneArmed) setDeleteHover(isOverDeleteZone(e.clientX, e.clientY));
       } else {
         panX += dx;
         panY += dy;
@@ -551,7 +557,7 @@
 
     window.addEventListener('mouseup', function (e) {
       if (repeatEdge) {
-      } else if (dragEntry && isOverDeleteZone(e.clientX, e.clientY)) {
+      } else if (dragEntry && deleteZoneArmed && isOverDeleteZone(e.clientX, e.clientY)) {
         deleteEntry(dragEntry);
       } else if (pressEntry && dragEntry === pressEntry) {
         var moved = Math.hypot(e.clientX - pressX, e.clientY - pressY);
